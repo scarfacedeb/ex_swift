@@ -1,0 +1,22 @@
+# Ignore ide files
+/.elixir_ls/
+/.vscode/
+/.idea/
+/tags
+
+# App artifacts
+/_build
+/db
+/deps
+/*.ez
+.tool-versions
+
+# Generated on crash by the VM
+erl_crash.dump
+
+# Configs
+config/*.secret.exs
+
+# CI
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
