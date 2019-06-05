@@ -36,7 +36,7 @@ defmodule ExSwift.Auth.Cache do
   end
 
   def refresh_config(config, ets) do
-    token = ExSwift.Auth.Token.create(config)
+    {:ok, token} = ExSwift.Auth.Token.create(config)
     :ets.insert(ets, {:token, token})
     Process.send_after(self(), {:refresh_config, config}, refresh_in(token.expires_at))
     token

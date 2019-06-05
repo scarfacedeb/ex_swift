@@ -23,7 +23,7 @@ defmodule ExSwift.Config do
   end
 
   def retrieve_token(config) do
-    token = ExSwift.Auth.get_token(config)
+    token = ExSwift.Auth.get_token!(config)
     Map.put(config, :token, token)
   end
 end

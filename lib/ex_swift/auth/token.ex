@@ -1,4 +1,10 @@
 defmodule ExSwift.Auth.Token do
+  @moduledoc """
+  Authentication token struct with fields necessary to make API calls.
+
+  `token` and `service_url` fields are required and used by ExSwift.Request.
+  """
+
   use TypedStruct
 
   typedstruct do
@@ -11,34 +17,34 @@ defmodule ExSwift.Auth.Token do
 
   @default_domain "Default"
 
+  @doc "Create new auth token based on config"
+  @spec create(ExSwift.Config.t()) :: {:ok, t()} | {:error, any()}
   def create(%ExSwift.Config{} = config) do
     url = config.auth_url <> "/v3/auth/tokens"
 
-    identity = %{
-      methods: ["password"],
-      password: %{
-        user: %{
-          name: config.username,
-          domain: %{name: @default_domain},
-          password: config.password
+    body = %{
+      auth: %{
+        identity: %{
+          methods: ["password"],
+          password: %{
+            user: %{
+              name: config.username,
+              domain: %{name: @default_domain},
+              password: config.password
+            }
+          }
         }
       }
     }
 
-    req_body =
-      Jason.encode!(%{
-        auth: %{identity: identity}
-      })
-
-    with {:ok, response} <- ExSwift.Http.post(url, req_body),
-         {:ok, %{"token" => json}} <- Jason.decode(response.body) do
-      parse(config, response, json)
+    with {:ok, response} <- ExSwift.Request.create_token(url, body) do
+      {:ok, to_struct(config, response)}
     end
   end
 
-  def parse(config, response, json) do
+  def to_struct(config, %{body: %{"token" => json}} = response) do
     struct!(__MODULE__, %{
-      token: ExSwift.Http.get_header(response, "x-subject-token"),
+      token: ExSwift.Request.get_header(response, "x-subject-token"),
       service_url: find_service_url(config, json["catalog"]),
       expires_at: to_datetime(json["expires_at"]),
       issued_at: to_datetime(json["issued_at"]),
@@ -58,10 +64,10 @@ defmodule ExSwift.Auth.Token do
     end
   end
 
-  def filter_by_type(%{"type" => type}, %{service_type: expected_type}),
+  defp filter_by_type(%{"type" => type}, %{service_type: expected_type}),
     do: type == expected_type
 
-  def find_endpoint(service, config) do
+  defp find_endpoint(service, config) do
     case service do
       %{"endpoints" => endpoints} ->
         Enum.find(endpoints, fn endpoint ->
