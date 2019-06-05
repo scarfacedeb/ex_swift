@@ -12,7 +12,6 @@ defmodule ExSwift.Auth.Token do
     field :service_url, String.t(), enforce: true
     field :expires_at, DateTime.t(), enforce: true
     field :issued_at, DateTime.t()
-    field :username, String.t()
   end
 
   @default_domain "Default"
@@ -47,8 +46,7 @@ defmodule ExSwift.Auth.Token do
       token: ExSwift.Request.get_header(response, "x-subject-token"),
       service_url: find_service_url(config, json["catalog"]),
       expires_at: to_datetime(json["expires_at"]),
-      issued_at: to_datetime(json["issued_at"]),
-      username: json["user"]["name"]
+      issued_at: to_datetime(json["issued_at"])
     })
   end
 
