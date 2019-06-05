@@ -96,6 +96,17 @@ defmodule ExSwift do
     |> Request.run(config)
   end
 
+  @doc "Get an object's metadata"
+  def head_object(container_id, object_id), do: head_object(Config.new(), container_id, object_id)
+
+  def head_object(config, container_id, object_id) do
+    %Request{
+      method: :head,
+      path: "/#{container_id}/#{object_id}"
+    }
+    |> Request.run(config)
+  end
+
   @doc "Put an object into a container"
   def put_object(container_id, object_id, body),
     do: put_object(Config.new(), container_id, object_id, body)
