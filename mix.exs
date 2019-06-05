@@ -24,7 +24,8 @@ defmodule ExSwift.MixProject do
     [
       {:mojito, "~> 0.3"},
       {:jason, "~> 1.1"},
-      {:typed_struct, "~> 0.1"}
+      {:typed_struct, "~> 0.1"},
+      {:dialyxir, "~> 1.0.0-rc", only: [:dev, :test], runtime: false},
     ]
   end
 end
