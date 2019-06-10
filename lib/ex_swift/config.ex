@@ -2,9 +2,9 @@ defmodule ExSwift.Config do
   use TypedStruct
 
   typedstruct do
-    field :auth_url, String.t()
-    field :username, String.t()
-    field :password, String.t()
+    field :auth_url, String.t(), enforce: true
+    field :username, String.t(), enforce: true
+    field :password, String.t(), enforce: true
     field :token, ExSwift.Auth.Token.t()
 
     field :service_type, String.t(), default: "object-store"
