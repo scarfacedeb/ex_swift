@@ -2,16 +2,24 @@ defmodule ExSwift do
   alias ExSwift.{Request, Config}
 
   @doc "List containers in an account"
-  def list_containers(params \\ %{})
-  def list_containers(params), do: list_containers(Config.new(), params)
+  def list_containers(opts \\ [])
+  def list_containers(opts), do: list_containers(Config.new(), opts)
 
-  def list_containers(%Config{} = config, params) do
+  def list_containers(%Config{} = config, opts) do
     %Request{
       method: :get,
       path: "/",
-      params: params
+      params: Map.new(opts)
     }
     |> Request.run(config)
+  end
+
+  def stream_containers!(opts \\ [])
+  def stream_containers!(opts), do: stream_containers!(Config.new(), opts)
+
+  def stream_containers!(%Config{} = config, stream_opts) do
+    stream_builder_fn = fn opts -> list_containers(config, opts) end
+    ExSwift.Pagination.stream!(stream_builder_fn, stream_opts)
   end
 
   @doc "Create a new container in an account"
