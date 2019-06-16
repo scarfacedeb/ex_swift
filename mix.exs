@@ -28,6 +28,7 @@ defmodule ExSwift.MixProject do
       {:jason, "~> 1.1"},
       {:typed_struct, "~> 0.1"},
       {:dialyxir, "~> 1.0.0-rc", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 
