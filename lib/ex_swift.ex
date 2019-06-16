@@ -41,48 +41,25 @@ defmodule ExSwift do
 
   Use stream_objects! for bigger containers.
   """
-  def list_objects(container_id, params \\ %{})
-  def list_objects(container_id, params), do: list_objects(Config.new(), container_id, params)
+  def list_objects(container_id, opts \\ [])
+  def list_objects(container_id, opts), do: list_objects(Config.new(), container_id, opts)
 
-  def list_objects(%Config{} = config, container_id, params) do
+  def list_objects(%Config{} = config, container_id, opts) do
     %Request{
       method: :get,
       path: "/#{container_id}",
-      params: params
+      params: Map.new(opts)
     }
     |> Request.run(config)
   end
 
   @doc "Stream objects in a container"
-  def stream_objects!(container_id, opts \\ %{})
+  def stream_objects!(container_id, opts \\ [])
   def stream_objects!(container_id, opts), do: stream_objects!(Config.new(), container_id, opts)
 
-  @default_page_limit 500
-
-  def stream_objects!(%Config{} = config, container_id, opts) do
-    opts = Enum.into(opts, %{})
-
-    Stream.resource(
-      fn -> Map.merge(%{limit: @default_page_limit, marker: nil}, opts) end,
-      fn
-        :last_page ->
-          {:halt, nil}
-
-        %{limit: limit} = params ->
-          case list_objects(config, container_id, params) do
-            {:ok, %{body: objects}} when length(objects) < limit ->
-              {objects, :last_page}
-
-            {:ok, %{body: objects}} when is_list(objects) ->
-              last_object = objects |> List.last()
-              {objects, %{params | marker: last_object["name"]}}
-
-            {:error, error} ->
-              error |> inspect() |> raise()
-          end
-      end,
-      fn _ -> nil end
-    )
+  def stream_objects!(%Config{} = config, container_id, stream_opts) do
+    stream_builder_fn = fn opts -> list_objects(config, container_id, opts) end
+    ExSwift.Pagination.stream!(stream_builder_fn, stream_opts)
   end
 
   @doc "Get a single object from a container"
