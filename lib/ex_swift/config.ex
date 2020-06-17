@@ -14,11 +14,11 @@ defmodule ExSwift.Config do
 
   def new(opts \\ []) do
     overrides = Map.new(opts)
-    config = Application.get_all_env(:ex_swift)
+    env = Application.get_all_env(:ex_swift)
+    config = env |> Map.new() |> Map.merge(overrides)
 
     __MODULE__
     |> struct!(config)
-    |> Map.merge(overrides)
     |> retrieve_token()
   end
 
