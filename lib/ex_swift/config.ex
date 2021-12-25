@@ -5,6 +5,7 @@ defmodule ExSwift.Config do
     field :auth_url, String.t(), enforce: true
     field :username, String.t(), enforce: true
     field :password, String.t(), enforce: true
+    field :project_id, String.t(), enforce: true
     field :token, ExSwift.Auth.Token.t()
 
     field :service_type, String.t(), default: "object-store"

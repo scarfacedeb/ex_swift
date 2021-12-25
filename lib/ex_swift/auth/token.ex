@@ -32,6 +32,11 @@ defmodule ExSwift.Auth.Token do
               password: config.password
             }
           }
+        },
+        scope: %{
+          project: %{
+            id: config.project_id
+          }
         }
       }
     }
