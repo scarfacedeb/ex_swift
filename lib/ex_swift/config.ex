@@ -7,6 +7,9 @@ defmodule ExSwift.Config do
     field :password, String.t(), enforce: true
     field :token, ExSwift.Auth.Token.t()
 
+    # See: https://docs.openstack.org/swift/latest/api/temporary_url_middleware.html
+    field :temp_url_key, String.t() | nil
+
     field :service_type, String.t(), default: "object-store"
     field :interface, String.t(), default: "public"
     field :region, String.t() | nil

@@ -129,4 +129,22 @@ defmodule ExSwift do
     }
     |> Request.run(config)
   end
+
+  @doc "Create a temporary URL"
+  def create_temporary_url(container_id, object_id, method \\ "GET", duration \\ 60 * 60 * 24), do: create_temporary_url(Config.new(), container_id, object_id, method, duration)
+
+  def create_temporary_url(config, container_id, object_id, method, duration) do
+    expires = DateTime.utc_now()
+    |> DateTime.to_unix
+    |> Kernel.+(duration)
+    |> Integer.to_string
+    path = "/v1/#{config.project_id}/#{container_id}/#{object_id}"
+    key = config.temp_url_key
+    hmac_body = "#{method}\n#{expires}\n#{path}"
+    temp_url_sig = :crypto.mac(:hmac, :sha, key, hmac_body) |> Base.encode16(case: :lower)
+    temp_url = "#{config.token.service_url}/#{container_id}/#{object_id}?temp_url_sig=#{temp_url_sig}&temp_url_expires=#{expires}"
+    {:ok, temp_url}
+  end
+
+
 end
