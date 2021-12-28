@@ -42,6 +42,17 @@ defmodule ExSwift do
     |> Request.run(config)
   end
 
+  @doc "Get a container's metadata"
+  def head_container(container_id), do: head_container(Config.new(), container_id)
+
+  def head_container(config, container_id) do
+    %Request{
+      method: :head,
+      path: "/#{container_id}"
+    }
+    |> Request.run(config)
+  end
+
   @doc """
   List objects in a container.
 
